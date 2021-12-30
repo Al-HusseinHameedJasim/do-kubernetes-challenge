@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: simeple-app
-        image: alhusseinjasim/simple-app:9ad835f
+        image: alhusseinjasim/simple-app:dce2d06
         ports:
         - containerPort: 80
