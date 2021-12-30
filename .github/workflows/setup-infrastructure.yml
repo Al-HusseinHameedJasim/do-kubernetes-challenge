@@ -1,0 +1,41 @@
+# store the space access key, secret key, and the token (e.g. DO_API_TOKEN) as GitHub secrets.
+name: 'Infrastructure'
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+    - main
+  # Allows running this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# This workflow run is made up of one job
+jobs:
+  terraform:
+    name: 'Set up infrastructure'
+    runs-on: ubuntu-latest
+
+    # Uses the Bash shell regardless of the GitHub Actions runner
+    defaults:
+      run:
+        shell: bash
+    
+    # Represents a sequence of tasks that will be executed as part of the job
+    steps:
+    
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Initializes Terraform's working directory by creating initial files, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform -chdir=terraform/ init -backend-config="access_key=$access_key" -backend-config="secret_key=$secret_key"
+      env:
+        access_key: ${{ secrets.SPACE_ACCESS_KEY }}
+        secret_key: ${{ secrets.SPACE_SECRET_KEY }}
+
+    # Automatically performs the actions in accordance with the execution plan.
+    - name: Terraform Apply
+      run: terraform -chdir=terraform/ apply -auto-approve -var="do_token=$token"
+      env:
+        token: ${{ secrets.DO_API_TOKEN }}
