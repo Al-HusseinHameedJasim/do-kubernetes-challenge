@@ -1,0 +1,77 @@
+# Store the personal access token, Docker Hub username and password as GitHub secrets.
+name: 'CI'
+
+on:
+  push:
+    branches:
+    - feature/*
+  # Triggers the workflow when a PR created against main branch has been closed
+  pull_request:
+    branches:
+    - main
+    types: [closed]
+
+env:
+  IMAGE_NAME: alhusseinjasim/simple-app
+
+jobs:
+
+  buildAndPush:
+    name: 'Build and Push a Docker Image'
+    runs-on: ubuntu-latest
+
+    # Uses the Bash shell regardless of the GitHub Actions runner
+    defaults:
+      run:
+        shell: bash
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Docker build
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME:${GITHUB_SHA::7}
+
+    - name: Login to the registry
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Docker push
+      run: docker push $IMAGE_NAME:${GITHUB_SHA::7}
+
+  UpdateTheVersion:
+    needs: buildAndPush
+    name: 'Update Docker image version'
+    runs-on: ubuntu-latest
+    # Runs only when the PR has been merged
+    if: github.event.pull_request.merged
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    # Updates the image version in the deployment manifest
+    - name: Update the version
+      run: sed -i "19s/\(simple-app:\).*/\1${GITHUB_SHA::7}/" ./manifests/deployment.yaml
+
+    # Commits the change
+    - name: Commit files 
+      run: |
+        git config --local user.email "ci@do-k8s-challenge.com"
+        git config --local user.name "ci"
+        git status
+        git add ./manifests
+        git commit -m "Updated the version of the Docker image"
+
+    # Pushes the updated file to the repo
+    - name: Push changes 
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.MY_GITHUB_TOKEN }}
+        force: true
