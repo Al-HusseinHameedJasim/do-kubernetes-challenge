@@ -28,7 +28,7 @@ To interact with DO API via the command line, I have installed doctl on windows 
 To authenticate, I have created a new personal access token in the DO portal.
 To supply the [arguments](https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs/resources/kubernetes_cluster#argument-reference) of DigitalOcean Kubernetes cluster with values, I have run the following commands to retrieve the values as shown in the image below:
 
-![doctl](images/1. doctl.png)
+![doctl](images/1.doctl.png)
 
 #### GitHub Actions
 To fully automate the process, I have set up a workflow in Github Actions. The sensitive values such as the token and the secret key have been stored as secrets in GitHub.
@@ -58,11 +58,11 @@ Once logged in, it becomes to deploy an application using ArgoCD. To do so, I ha
 argocd app create -f argocd/simple-app.yaml
 ```
 It is also possible to use the UI as shown in the image below:
-![ArgoCD UI](images/2. ArgoCD UI.png)
+![ArgoCD UI](images/2.ArgoCD_UI.png)
 
 ArgoCD updates the application once a new version has been released, i.e. the Docker image version in the deployment manifest has been updated.
 Here's an example:
-![Update the app](images/3. The changes in git and how are they reflected in ArgoCD.png)
+![Update the app](images/3.The_changes_in_git_and_how_are_they_reflected_in_ArgoCD.png)
 
 ## There's a video, too!
 I have also recorded a [video](https://youtu.be/z-VzqL4JxM4) showing the aforementioned steps with a plan to upload another one soon.
