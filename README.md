@@ -58,10 +58,12 @@ Once logged in, it becomes to deploy an application using ArgoCD. To do so, I ha
 argocd app create -f argocd/simple-app.yaml
 ```
 It is also possible to use the UI as shown in the image below:
+
 ![ArgoCD UI](images/2.ArgoCD_UI.png)
 
 ArgoCD updates the application once a new version has been released, i.e. the Docker image version in the deployment manifest has been updated.
 Here's an example:
+
 ![Update the app](images/3.The_changes_in_git_and_how_are_they_reflected_in_ArgoCD.png)
 
 ## There's a video, too!
